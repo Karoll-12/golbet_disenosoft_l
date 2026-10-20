@@ -15,9 +15,12 @@ namespace GolBet.Services.Helpers;
 public static class DateTimeExtensions
 
 {
+
     private static readonly TimeZoneInfo ColombiaZone =
 
         TimeZoneInfo.FindSystemTimeZoneById("America/Bogota");
+
+
 
     /// <summary>UTC (DB) -> Colombia local (form editing).</summary> 
 

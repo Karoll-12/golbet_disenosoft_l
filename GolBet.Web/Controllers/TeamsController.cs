@@ -1,19 +1,31 @@
 ﻿// GolBet.Web/Controllers/TeamsController.cs 
 
+using GolBet.Repositories.Data;
 using GolBet.Services.DTOs;
+using Microsoft.AspNetCore.Authorization;
+
 using GolBet.Services.Interfaces;
+
 using Microsoft.AspNetCore.Mvc;
 
+
+
 namespace GolBet.Web.Controllers;
+
+[Authorize(Roles = DbSeeder.AdminRole)]
 
 public class TeamsController : Controller
 
 {
+
     private readonly ITeamService _teamService;
+
+
 
     public TeamsController(ITeamService teamService)
 
         => _teamService = teamService;
+
 
 
     // GET /Teams 
@@ -22,9 +34,13 @@ public class TeamsController : Controller
 
         => View(await _teamService.GetAllAsync());
 
+
+
     // GET /Teams/Create 
 
     public IActionResult Create() => View(new TeamFormDto());
+
+
 
     // POST /Teams/Create 
 
@@ -37,6 +53,7 @@ public class TeamsController : Controller
         if (!ModelState.IsValid) return View(dto);
 
 
+
         await _teamService.CreateAsync(dto);
 
         TempData["Success"] = $"Equipo «{dto.Name}» creado correctamente.";
@@ -44,6 +61,8 @@ public class TeamsController : Controller
         return RedirectToAction(nameof(Index));       // PRG 
 
     }
+
+
 
     // GET /Teams/Edit/5 
 
