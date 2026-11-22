@@ -9,13 +9,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
+// ---- Culture ----
 var culture = new CultureInfo("es-CO");
+// Dates in Spanish; numbers neutral so model binding reads "2.5" correctly
+culture.NumberFormat = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+culture.NumberFormat.NumberGroupSeparator = ".";  // "2.5" fails loudly, never binds as 25
+
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ---- Services ----
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -53,11 +58,9 @@ builder.Services.AddScoped<IMatchService, MatchService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IBetService, BetService>();
 
-
-
 var app = builder.Build();
 
-// Seed the database on startup
+// ---- Database seeding ----
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -67,7 +70,7 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAsync(context, roleManager, userManager);
 }
 
-// Configure the HTTP request pipeline.
+// ---- HTTP request pipeline ----
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
